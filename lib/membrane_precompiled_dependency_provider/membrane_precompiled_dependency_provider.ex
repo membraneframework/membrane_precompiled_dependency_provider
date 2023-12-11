@@ -1,18 +1,10 @@
-defmodule MembranePrecompiledDependencyProvider do
+defmodule Membrane.PrecompiledDependencyProvider do
   @moduledoc """
-  Documentation for `MembranePrecompiledDependencyProvider`.
+  Module providing URLs for precompiled dependencies used by Membrane plugins.
   """
 
-  @doc """
-  Hello world.
+  @spec get_precompiled_dependency_url(dependency_name :: atom()) :: String.t()
+  def get_precompiled_dependency_url(dependency_name) do
 
-  ## Examples
-
-      iex> MembranePrecompiledDependencyProvider.hello()
-      :world
-
-  """
-  def hello do
-    :world
   end
 end
