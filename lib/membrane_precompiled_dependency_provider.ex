@@ -21,7 +21,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
           :ffmpeg | :portaudio | :"fdk-aac" | :srtp | :opus | :sdl2 | :portaudio | :mad
 
   @doc """
-  Get url where precompiled build of given dependency for current platform is located.
+  Get URL of a precompiled build of given dependency for appropriate target.
   """
   @spec get_precompiled_dependency_url(dependency :: precompiled_dependency()) ::
           String.t() | nil

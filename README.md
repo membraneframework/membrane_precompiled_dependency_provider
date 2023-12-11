@@ -22,9 +22,9 @@ end
 
 In most cases the package is intended to provide an URL to be used in your project's `bundlex.exs`. This text will assume familiarity with Bundlex and it's mechanism of managing precompiled dependencies, so if you're not acquainted with it you can read about it [here](https://hexdocs.pm/bundlex/readme.html).
 
-Dependencies that are fully located in a correctly structured repository in `membraneframework-precompiled` organization will be referred to as _Generic_. Otherwise they will be referred to as _Non-generic_.
+Dependencies that are fully located in a correctly structured repository in `membraneframework-precompiled` github organization (details [here](https://github.com/membraneframework-precompiled)) will be referred to as _Generic_. Otherwise they will be referred to as _Non-generic_.
 
-The simplest example of `natives/0` function in `bundlex.exs`, where we have an `:example` native that has an `:example_dep` Generic dependency and it's precompiled build is available in one of `membraneframework-precompiled` repositories:
+The simplest example of `natives/0` function in `bundlex.exs`, where we have an `:example` native that has an `:example_dep` Generic dependency:
 
 ```elixir
 defp natives() do
@@ -44,19 +44,36 @@ defp natives() do
   ]
 ```
 
-#### Adding Non-generic dependency
+## Adding new dependencies
+
+Pool of dependencies offered by this package can be expanded with new ones, Generic and Non-generic, by modifying `lib/membrane_precompiled_dependency_provider.ex` appropriately.
+
+To add any dependency start by adding it's name as one of possible values of `precompiled_dependencies()` type:
+```elixir
+@type precompiled_dependency() :: ... | :example_dep
+```
+
+#### Adding Generic dependencies
+
+When the precompiled builds of a dependency are located in a correctly structured repository in `membraneframework-precompiled` organization on github (details [here](https://github.com/membraneframework-precompiled)) they can be added to this package as a Generic dependency.
+
+To achieve this simply add it's name to the `@generic_precompiled_deps` module attribute:
+
+```elixir
+  @generic_precompiled_deps [
+    ...,
+    :example_generic_dep
+  ]
+```
+
+#### Adding Non-generic dependencies
 
 When the precompiled builds of a dependency are already hosted somewhere else they can be added to this package as a Non-generic dependency. 
 
-To achieve this add the following changes in `lib/membrane_precompiled_dependency_provider.ex`:
-* Add the dependency name as one of possible values of `precompiled_dependencies()` type:
-```elixir
-@type precompiled_dependency() :: ... | :non_generic_example_dep
-```
+To achieve this make the following changes create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
 
-* Create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
 ```elixir
-defp get_non_generic_dep_url(:non_generic_example_dep, target) do
+defp get_non_generic_dep_url(:example_non_generic_dep, target) do
   ...
 end
 ```
