@@ -26,22 +26,28 @@ defmodule Membrane.PrecompiledDependencyProvider do
   @spec get_precompiled_dependency_url(dependency :: precompiled_dependency()) ::
           String.t() | nil
   def get_precompiled_dependency_url(dependency) do
+    target = Bundlex.get_target()
+
     case dependency do
-      generic_dep when generic_dep in @generic_precompiled_deps -> get_generic_url(generic_dep)
-      non_generic_dep -> get_non_generic_url(non_generic_dep)
+      generic_dep when generic_dep in @generic_precompiled_deps ->
+        get_generic_dep_url(generic_dep, target)
+
+      non_generic_dep ->
+        get_non_generic_dep_url(non_generic_dep, target)
     end
   end
 
-  @spec get_generic_url_prefix(dependency_name :: precompiled_dependency()) :: String.t()
-  defp get_generic_url_prefix(dependency_name) do
-    "#{@membrane_precompiled_org_url}/precompiled_#{dependency_name}/releases/latest/download/#{dependency_name}"
+  @spec get_generic_dep_url_prefix(dep :: precompiled_dependency()) :: String.t()
+  defp get_generic_dep_url_prefix(dep) do
+    "#{@membrane_precompiled_org_url}/precompiled_#{dep}/releases/latest/download/#{dep}"
   end
 
-  @spec get_generic_url(dependency_name :: precompiled_dependency()) :: String.t() | nil
-  defp get_generic_url(dependency_name) do
-    url_prefix = get_generic_url_prefix(dependency_name)
+  @spec get_generic_dep_url(dep :: precompiled_dependency(), target :: Bundlex.target()) ::
+          String.t() | nil
+  defp get_generic_dep_url(dep, target) do
+    url_prefix = get_generic_dep_url_prefix(dep)
 
-    case Bundlex.get_target() do
+    case target do
       %{abi: "musl"} ->
         nil
 
@@ -59,11 +65,12 @@ defmodule Membrane.PrecompiledDependencyProvider do
     end
   end
 
-  @spec get_non_generic_url(dependency_name :: precompiled_dependency()) :: String.t() | nil
-  defp get_non_generic_url(:ffmpeg) do
-    url_prefix = get_generic_url_prefix(:ffmpeg)
+  @spec get_non_generic_dep_url(dep :: precompiled_dependency(), target :: Bundlex.target()) ::
+          String.t() | nil
+  defp get_non_generic_dep_url(:ffmpeg, target) do
+    url_prefix = get_generic_dep_url_prefix(:ffmpeg)
 
-    case Bundlex.get_target() do
+    case target do
       %{abi: "musl"} ->
         nil
 
