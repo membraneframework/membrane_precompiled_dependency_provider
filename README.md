@@ -1,6 +1,5 @@
 # MembranePrecompiledDependencyProvider
 
-**TODO: Add description**
 
 ## Installation
 

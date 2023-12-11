@@ -69,7 +69,12 @@ defmodule Membrane.PrecompiledDependencyProvider.MixProject do
 
   defp deps() do
     [
-      {:bundlex, "~> 1.4"}
+      {:bundlex, github: "membraneframework/bundlex", branch: "expand-get-target"},
+      # {:bundlex, "~> 1.4"}
+
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
+      {:credo, ">= 0.0.0", only: :dev, runtime: false},
     ]
   end
 end
