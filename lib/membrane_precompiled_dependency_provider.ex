@@ -53,7 +53,6 @@ defmodule Membrane.PrecompiledDependencyProvider do
   # ---------------------------------
   # NEW NON-GENERIC DEPENDENCIES HERE
 
-
   # ---------------------------------
 
   defp get_dep_url(generic_dep, target) do
