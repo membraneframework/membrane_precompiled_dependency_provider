@@ -8,7 +8,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
   @membrane_precompiled_org_url "https://github.com/membraneframework-precompiled"
 
   @type precompiled_dependency() ::
-          :ffmpeg | :portaudio | :"fdk-aac" | :srtp | :opus | :sdl2 | :portaudio | :mad
+          :ffmpeg | :portaudio | :"fdk-aac" | :srtp | :opus | :sdl2 | :portaudio | :mad | :lame
 
   @doc """
   Get URL of a precompiled build of given dependency for appropriate target.
@@ -53,7 +53,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
   # ---------------------------------
   # NEW NON-GENERIC DEPENDENCIES HERE
 
-  
+
   # ---------------------------------
 
   defp get_dep_url(generic_dep, target) do
