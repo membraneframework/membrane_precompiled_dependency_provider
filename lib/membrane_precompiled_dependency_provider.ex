@@ -7,14 +7,8 @@ defmodule Membrane.PrecompiledDependencyProvider do
   """
   @membrane_precompiled_org_url "https://github.com/membraneframework-precompiled"
 
-  @generic_precompiled_deps [
-    :portaudio,
-    :"fdk-aac",
-    :srtp,
-    :opus,
-    :sdl2,
-    :portaudio,
-    :mad
+  @non_generic_precompiled_deps [
+    :ffmpeg
   ]
 
   @type precompiled_dependency() ::
@@ -29,11 +23,11 @@ defmodule Membrane.PrecompiledDependencyProvider do
     target = Bundlex.get_target()
 
     case dependency do
-      generic_dep when generic_dep in @generic_precompiled_deps ->
-        get_generic_dep_url(generic_dep, target)
+      generic_dep when generic_dep in @non_generic_precompiled_deps ->
+        get_non_generic_dep_url(generic_dep, target)
 
       non_generic_dep ->
-        get_non_generic_dep_url(non_generic_dep, target)
+        get_generic_dep_url(non_generic_dep, target)
     end
   end
 

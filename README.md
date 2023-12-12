@@ -46,31 +46,29 @@ defp natives() do
 
 ## Adding new dependencies
 
-Pool of dependencies offered by this package can be expanded with new ones, Generic and Non-generic, by modifying `lib/membrane_precompiled_dependency_provider.ex` appropriately.
+Pool of dependencies offered by this package can be expanded with new ones, _Generic_ and _Non-generic_, by modifying `lib/membrane_precompiled_dependency_provider.ex` appropriately.
 
 To add any dependency start by adding it's name as one of possible values of `precompiled_dependencies()` type:
 ```elixir
 @type precompiled_dependency() :: ... | :example_dep
 ```
 
-#### Adding Generic dependencies
-
-When the precompiled builds of a dependency are located in a correctly structured repository in `membraneframework-precompiled` organization on github (details [here](https://github.com/membraneframework-precompiled)) they can be added to this package as a Generic dependency.
-
-To achieve this simply add it's name to the `@generic_precompiled_deps` module attribute:
-
-```elixir
-  @generic_precompiled_deps [
-    ...,
-    :example_generic_dep
-  ]
-```
+When the dependency is _Generic_ (is present on `membraneframework-precompiled`) that is all you need to do.
 
 #### Adding Non-generic dependencies
 
-When the precompiled builds of a dependency are already hosted somewhere else they can be added to this package as a Non-generic dependency. 
+When the precompiled builds of a dependency are already hosted somewhere else they can be added as a _Non-generic_ dependency. 
 
-To achieve this make the following changes create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
+To achieve this add it's name to the `@non_generic_precompiled_deps` module attribute:
+
+```elixir
+  @non_generic_precompiled_deps [
+    ...,
+    :example_non_generic_dep
+  ] 
+```
+
+and then create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
 
 ```elixir
 defp get_non_generic_dep_url(:example_non_generic_dep, target) do
