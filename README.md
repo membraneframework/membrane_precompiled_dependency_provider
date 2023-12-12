@@ -36,7 +36,7 @@ defp natives() do
         example_dep: 
         [{
           :precompiled, 
-          Membrane.PrecompiledDependencyProvider.get_precompiled_dependency_url(:example_dep)
+          Membrane.PrecompiledDependencyProvider.get_dependency_url(:example_dep)
         }]
       ],
       preprocessor: Unifex
@@ -59,16 +59,7 @@ When the dependency is _Generic_ (is present on `membraneframework-precompiled`)
 
 When the precompiled builds of a dependency are already hosted somewhere else they can be added as a _Non-generic_ dependency. 
 
-To achieve this add it's name to the `@non_generic_precompiled_deps` module attribute:
-
-```elixir
-  @non_generic_precompiled_deps [
-    ...,
-    :example_non_generic_dep
-  ] 
-```
-
-and then create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
+To achieve this create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
 
 ```elixir
 defp get_non_generic_dep_url(:example_non_generic_dep, target) do
