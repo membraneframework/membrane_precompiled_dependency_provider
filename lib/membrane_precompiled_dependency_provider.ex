@@ -33,11 +33,11 @@ defmodule Membrane.PrecompiledDependencyProvider do
       %{abi: "musl"} ->
         nil
 
-      %{architecture: "aarch64", os: "linux"} ->
-        "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-linuxarm64-gpl-shared-6.0.tar.xz"
-
       %{architecture: "x86_64", os: "linux"} ->
         "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-linux64-gpl-shared-6.0.tar.xz"
+
+      %{architecture: "aarch64", os: "linux"} ->
+        "https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-linuxarm64-gpl-shared-6.0.tar.xz"
 
       %{architecture: "x86_64", os: "darwin" <> _rest_of_os_name} ->
         "#{url_prefix}_macos_intel.tar.gz"
