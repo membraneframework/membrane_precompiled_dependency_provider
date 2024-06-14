@@ -1,7 +1,7 @@
 defmodule Membrane.PrecompiledDependencyProvider.MixProject do
   use Mix.Project
 
-  @version "0.1.2"
+  @version "0.1.3"
   @github_url "https://github.com/membraneframework/membrane_precompiled_dependency_provider"
 
   def project do
