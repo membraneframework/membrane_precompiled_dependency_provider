@@ -11,45 +11,46 @@ defmodule Membrane.PrecompiledDependencyProvider do
   @membrane_precompiled_org_url "https://github.com/membraneframework-precompiled"
   @ffmpeg_builds_url "https://github.com/BtbN/FFmpeg-Builds/releases"
 
-  @type precompiled_dependency() ::
-          :ffmpeg
-          | :portaudio
-          | :"fdk-aac"
-          | :srtp
-          | :opus
-          | :sdl2
-          | :portaudio
-          | :mad
-          | :lame
-          | :libvpx
-          | :srt
-          | atom()
+  @typedoc """
+  A precompiled_dependency can be an atom representing a name of non-generic dependency which is handled in 
+  `get_dependency_url/2`, such as `:ffmpeg`, or a generic dependency which has a corresponding repository 
+  in https://github.com/membraneframework-precompiled organization, such as `:opus` or `:libvpx`. 
+  """
+  @type precompiled_dependency() :: atom()
 
   @doc """
-  Get URL of a precompiled build of given dependency for a platform from which this function is being
-  called. A specific version of the dependency can also be provided. For generic dependencies this 
-  version needs to be the same as a release name from the repository of the precompiled dependency, 
-  but without the leading "v". By default the latest version will be taken.
+  Get URL of a latest precompiled build of given dependency for a platform from which this function is being
+  called. To get a specific version see `get_dependency_url/2`
   """
-  @spec get_dependency_url(precompiled_dependency(), version :: String.t()) ::
+  @spec get_dependency_url(precompiled_dependency()) ::
           String.t() | nil
-  def get_dependency_url(dependency, version \\ "latest")
+  def get_dependency_url(dependency) do
+    get_dependency_url(dependency, [])
+  end
 
-  def get_dependency_url(:ffmpeg, version) do
+  @doc """
+  Same as `get_dependency_url/1`, but with an option to provide a specific version of the dependency. 
+  For generic dependencies this version needs to be the same as a release name from the repository 
+  of the precompiled dependency, but without the leading "v".
+  """
+  @spec get_dependency_url(precompiled_dependency(), version: String.t()) ::
+          String.t() | nil
+
+  def get_dependency_url(:ffmpeg, options) do
+    version = Keyword.get(options, :version, "latest")
+
     generic_url_prefix =
       get_generic_dependency_url_prefix(:ffmpeg, version)
-
-    {linux_x86_release, linux_arm_release} = get_linux_ffmpeg_releases(version)
 
     case Bundlex.get_target() do
       %{abi: "musl"} ->
         nil
 
       %{architecture: "x86_64", os: "linux"} ->
-        "#{@ffmpeg_builds_url}/#{linux_x86_release}"
+        "#{@ffmpeg_builds_url}/#{get_linux_ffmpeg_release(version, "linux64")}"
 
       %{architecture: "aarch64", os: "linux"} ->
-        "#{@ffmpeg_builds_url}/#{linux_arm_release}"
+        "#{@ffmpeg_builds_url}/#{get_linux_ffmpeg_release(version, "linuxarm64")}"
 
       %{architecture: "x86_64", os: "darwin" <> _rest_of_os_name} ->
         "#{generic_url_prefix}_macos_intel.tar.gz"
@@ -69,7 +70,9 @@ defmodule Membrane.PrecompiledDependencyProvider do
   # end
   # ---------------------------------
 
-  def get_dependency_url(generic_dependency, version) do
+  def get_dependency_url(generic_dependency, options) do
+    version = Keyword.get(options, :version, "latest")
+
     generic_url_prefix =
       get_generic_dependency_url_prefix(generic_dependency, version)
 
@@ -104,32 +107,30 @@ defmodule Membrane.PrecompiledDependencyProvider do
     end
   end
 
-  @spec get_linux_ffmpeg_releases(String.t()) ::
-          {x86_release :: String.t(), arm_release :: String.t()}
-  defp get_linux_ffmpeg_releases(version) do
+  @spec get_linux_ffmpeg_release(String.t(), String.t()) :: String.t()
+  defp get_linux_ffmpeg_release(version, platform) do
     case version do
       v when v in ["6.0", "6.0.1"] ->
-        &"download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-#{&1}-gpl-shared-6.0.tar.xz"
+        "download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-#{platform}-gpl-shared-6.0.tar.xz"
 
       v when v in ["6.1", "6.1.3"] ->
-        &"download/autobuild-2025-08-31-13-00/ffmpeg-n6.1.3-#{&1}-gpl-shared-6.1.tar.xz"
+        "download/autobuild-2025-08-31-13-00/ffmpeg-n6.1.3-#{platform}-gpl-shared-6.1.tar.xz"
 
       v when v in ["7.0", "7.0.2"] ->
-        &"download/autobuild-2024-08-31-12-50/ffmpeg-n7.0.2-6-g7e69129d2f-#{&1}-gpl-shared-7.0.tar.xz"
+        "download/autobuild-2024-08-31-12-50/ffmpeg-n7.0.2-6-g7e69129d2f-#{platform}-gpl-shared-7.0.tar.xz"
 
       v when v in ["7.1", "7.1.2"] ->
-        &"download/autobuild-2025-09-23-13-17/ffmpeg-n7.1.2-2-gab05459692-#{&1}-gpl-shared-7.1.tar.xz"
+        "download/autobuild-2025-09-23-13-17/ffmpeg-n7.1.2-2-gab05459692-#{platform}-gpl-shared-7.1.tar.xz"
 
       "8.0" ->
-        &"download/autobuild-2025-09-23-13-17/ffmpeg-n8.0-14-gb9adbf0fcc-#{&1}-gpl-shared-8.0.tar.xz"
+        "download/autobuild-2025-09-23-13-17/ffmpeg-n8.0-14-gb9adbf0fcc-#{platform}-gpl-shared-8.0.tar.xz"
 
       "latest" ->
-        &"latest/download/ffmpeg-master-latest-#{&1}-gpl-shared.tar.xz"
+        "latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
 
       other ->
         Logger.warning("Version #{other} not found, using latest")
-        &"latest/download/ffmpeg-master-latest-#{&1}-gpl-shared.tar.xz"
+        "latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
     end
-    |> then(&{&1.("linux64"), &1.("linuxarm64")})
   end
 end

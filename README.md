@@ -22,7 +22,7 @@ end
 
 In most cases the package is intended to provide an URL to be used in your project's `bundlex.exs`. This text will assume familiarity with Bundlex and it's mechanism of managing precompiled dependencies, so if you're not acquainted with it you can read about it [here](https://hexdocs.pm/bundlex/readme.html).
 
-Dependencies that are fully located in a correctly structured repository in `membraneframework-precompiled` github organization (details [here](https://github.com/membraneframework-precompiled)) will be referred to as _Generic_. Otherwise they will be referred to as _Non-generic_.
+Dependencies that are fully located in a correctly structured repository in `membraneframework-precompiled` github organization (details [here](https://github.com/membraneframework-precompiled)) will be referred to as _generic_. Otherwise they will be referred to as _non-generic_.
 
 The simplest example of `natives/0` function in `bundlex.exs`, where we have an `:example` native that has an `:example_dep` Generic dependency:
 
@@ -36,7 +36,7 @@ defp natives() do
         example_dep: 
         [{
           :precompiled, 
-          Membrane.PrecompiledDependencyProvider.get_dependency_url(:example_dep)
+          Membrane.PrecompiledDependencyProvider.get_dependency_url(:example_dep, "1.2.3")
         }]
       ],
       preprocessor: Unifex
@@ -46,18 +46,13 @@ defp natives() do
 
 ## Adding new dependencies
 
-Pool of dependencies offered by this package can be expanded with new ones, _Generic_ and _Non-generic_, by modifying `lib/membrane_precompiled_dependency_provider.ex` appropriately.
-
-To add any dependency start by adding it's name as one of possible values of `precompiled_dependencies()` type:
-```elixir
-@type precompiled_dependency() :: ... | :example_dep
-```
-
-When the dependency is _Generic_ (is present on `membraneframework-precompiled`) that is all you need to do.
+Pool of dependencies provided by this package can be expanded with new ones. To add a _generic_ dependency you don't need to modify anything 
+in this package, only ensure that an appropriate repository exists in [membraneframework-precompiled](https://github.com/membraneframework-precompiled) github 
+organization or create it according to the instructions on the home page.
 
 #### Adding Non-generic dependencies
 
-When the precompiled builds of a dependency are already hosted somewhere else they can be added as a _Non-generic_ dependency. 
+When the precompiled builds of a dependency are already hosted somewhere else they can be added as a _non-generic_ dependency. 
 
 To achieve this create a clause of `get_non_generic_dep_url/2` that pattern-matches on your dependency's name and returns an URL appropriate for the passed target:
 
@@ -67,7 +62,7 @@ defp get_non_generic_dep_url(:example_non_generic_dep, target) do
 end
 ```
  
-For an example see implementation for `:ffmpeg`.
+For reference see the implementation for `:ffmpeg`.
 
 ## Copyright and License
 
