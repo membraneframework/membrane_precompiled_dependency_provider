@@ -19,22 +19,14 @@ defmodule Membrane.PrecompiledDependencyProvider do
   @type precompiled_dependency() :: atom()
 
   @doc """
-  Get URL of a latest precompiled build of given dependency for a platform from which this function is being
-  called. To get a specific version see `get_dependency_url/2`
-  """
-  @spec get_dependency_url(precompiled_dependency()) ::
-          String.t() | nil
-  def get_dependency_url(dependency) do
-    get_dependency_url(dependency, [])
-  end
-
-  @doc """
-  Same as `get_dependency_url/1`, but with an option to provide a specific version of the dependency. 
+  Get URL of a precompiled build of given dependency for a platform from which this function is being
+  called. A specific version of the dependency can be provided with `:version` option. 
   For generic dependencies this version needs to be the same as a release name from the repository 
-  of the precompiled dependency, but without the leading "v".
+  of the precompiled dependency, but without the leading "v". By default the latest version is chosen.
   """
   @spec get_dependency_url(precompiled_dependency(), version: String.t()) ::
           String.t() | nil
+  def get_dependency_url(dependency, options \\ [])
 
   def get_dependency_url(:ffmpeg, options) do
     version = Keyword.get(options, :version, "latest")
@@ -109,27 +101,27 @@ defmodule Membrane.PrecompiledDependencyProvider do
 
   @spec get_linux_ffmpeg_release(String.t(), String.t()) :: String.t()
   defp get_linux_ffmpeg_release(version, platform) do
-    case version do
-      v when v in ["6.0", "6.0.1"] ->
+    cond do
+      version in ["6.0", "6.0.1"] ->
         "download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-#{platform}-gpl-shared-6.0.tar.xz"
 
-      v when v in ["6.1", "6.1.3"] ->
+      version in ["6.1", "6.1.3"] ->
         "download/autobuild-2025-08-31-13-00/ffmpeg-n6.1.3-#{platform}-gpl-shared-6.1.tar.xz"
 
-      v when v in ["7.0", "7.0.2"] ->
+      version in ["7.0", "7.0.2"] ->
         "download/autobuild-2024-08-31-12-50/ffmpeg-n7.0.2-6-g7e69129d2f-#{platform}-gpl-shared-7.0.tar.xz"
 
-      v when v in ["7.1", "7.1.2"] ->
+      version in ["7.1", "7.1.2"] ->
         "download/autobuild-2025-09-23-13-17/ffmpeg-n7.1.2-2-gab05459692-#{platform}-gpl-shared-7.1.tar.xz"
 
-      "8.0" ->
+      version == "8.0" ->
         "download/autobuild-2025-09-23-13-17/ffmpeg-n8.0-14-gb9adbf0fcc-#{platform}-gpl-shared-8.0.tar.xz"
 
-      "latest" ->
+      version == "latest" ->
         "latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
 
-      other ->
-        Logger.warning("Version #{other} not found, using latest")
+      true ->
+        Logger.warning("Version #{version} not found, using latest")
         "latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
     end
   end
