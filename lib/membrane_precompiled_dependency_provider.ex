@@ -114,7 +114,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
   defp resolve_version(dependency, opts) do
     opts_version = Keyword.get(opts, :version, "latest")
 
-    Application.get_env(:membrane_precompiled_dependency_provider, :versions)
+    Application.get_env(:membrane_precompiled_dependency_provider, :versions, [])
     |> Keyword.get(dependency, opts_version)
   end
 
