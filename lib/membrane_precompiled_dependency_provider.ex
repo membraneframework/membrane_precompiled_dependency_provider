@@ -12,24 +12,45 @@ defmodule Membrane.PrecompiledDependencyProvider do
   @ffmpeg_builds_url "https://github.com/BtbN/FFmpeg-Builds/releases"
 
   @typedoc """
-  A precompiled_dependency can be an atom representing a name of non-generic dependency which is handled in 
-  `get_dependency_url/2`, such as `:ffmpeg`, or a generic dependency which has a corresponding repository 
-  in https://github.com/membraneframework-precompiled organization, such as `:opus` or `:libvpx`. 
+  An atom representing a dependency.
+
+  Dependency can be non-generic, which is handled in `get_dependency_url/2`, such as `:ffmpeg`, 
+  or generic, which has a corresponding repository in 
+  https://github.com/membraneframework-precompiled organization, such as `:opus` or `:libvpx`. 
   """
   @type precompiled_dependency() :: atom()
 
+  @typedoc """
+  List of desired versions of the precompiled dependencies.
+
+  If an application requires specific versions of used precompiled dependencies, they can be specified
+  by passing such list to a `Config.config/3` function with `:membrane_precompiled_dependency_provider`
+  root key and `:versions` key, like so 
+
+      config :membrane_precompiled_dependency_provider, :versions,
+        ffmpeg: "6.0.1",
+        opus: "1.5.2"
+  """
+  @type version_config() :: [
+          {precompiled_dependency(), String.t()}
+        ]
+
   @doc """
   Get URL of a precompiled build of given dependency for a platform from which this function is being
-  called. A specific version of the dependency can be provided with `:version` option. 
-  For generic dependencies this version needs to be the same as a release name from the repository 
-  of the precompiled dependency, but without the leading "v". By default the latest version is chosen.
+  called. 
+
+  A specific version of the dependency can be provided with `:version` option or through config 
+  (see `t:version_config/0`). If provided in both ways, the config value will be taken.
+  For generic dependencies this version needs to be the same as a release name from the
+  repository of the precompiled dependency, but without the leading "v". By default the latest
+  version is chosen.
   """
   @spec get_dependency_url(precompiled_dependency(), version: String.t()) ::
           String.t() | nil
   def get_dependency_url(dependency, options \\ [])
 
   def get_dependency_url(:ffmpeg, options) do
-    version = Keyword.get(options, :version, "latest")
+    version = resolve_version(:ffmpeg, options)
 
     generic_url_prefix =
       get_generic_dependency_url_prefix(:ffmpeg, version)
@@ -63,7 +84,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
   # ---------------------------------
 
   def get_dependency_url(generic_dependency, options) do
-    version = Keyword.get(options, :version, "latest")
+    version = resolve_version(generic_dependency, options)
 
     generic_url_prefix =
       get_generic_dependency_url_prefix(generic_dependency, version)
@@ -87,6 +108,14 @@ defmodule Membrane.PrecompiledDependencyProvider do
       _other ->
         nil
     end
+  end
+
+  @spec resolve_version(precompiled_dependency(), version: String.t()) :: String.t()
+  defp resolve_version(dependency, opts) do
+    opts_version = Keyword.get(opts, :version, "latest")
+
+    Application.get_env(:membrane_precompiled_dependency_provider, :versions)
+    |> Keyword.get(dependency, opts_version)
   end
 
   @spec get_generic_dependency_url_prefix(precompiled_dependency(), String.t()) :: String.t()
