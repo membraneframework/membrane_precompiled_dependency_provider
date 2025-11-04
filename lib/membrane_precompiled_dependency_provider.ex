@@ -60,10 +60,10 @@ defmodule Membrane.PrecompiledDependencyProvider do
         nil
 
       %{architecture: "x86_64", os: "linux"} ->
-        "#{@ffmpeg_builds_url}/#{get_linux_ffmpeg_release(version, "linux64")}"
+        get_linux_ffmpeg_release(version, "linux64")
 
       %{architecture: "aarch64", os: "linux"} ->
-        "#{@ffmpeg_builds_url}/#{get_linux_ffmpeg_release(version, "linuxarm64")}"
+        get_linux_ffmpeg_release(version, "linuxarm64")
 
       %{architecture: "x86_64", os: "darwin" <> _rest_of_os_name} ->
         "#{generic_url_prefix}_macos_intel.tar.gz"
@@ -132,26 +132,26 @@ defmodule Membrane.PrecompiledDependencyProvider do
   defp get_linux_ffmpeg_release(version, platform) do
     cond do
       version in ["6.0", "6.0.1"] ->
-        "download/autobuild-2023-11-30-12-55/ffmpeg-n6.0.1-#{platform}-gpl-shared-6.0.tar.xz"
+        "#{@membrane_precompiled_org_url}/precompiled_ffmpeg/releases/download/v6.0.1/ffmpeg_#{platform}.tar.xz"
 
       version in ["6.1", "6.1.3"] ->
-        "download/autobuild-2025-08-31-13-00/ffmpeg-n6.1.3-#{platform}-gpl-shared-6.1.tar.xz"
+        "#{@ffmpeg_builds_url}/download/autobuild-2025-08-31-13-00/ffmpeg-n6.1.3-#{platform}-gpl-shared-6.1.tar.xz"
 
       version in ["7.0", "7.0.2"] ->
-        "download/autobuild-2024-08-31-12-50/ffmpeg-n7.0.2-6-g7e69129d2f-#{platform}-gpl-shared-7.0.tar.xz"
+        "#{@ffmpeg_builds_url}/download/autobuild-2024-08-31-12-50/ffmpeg-n7.0.2-6-g7e69129d2f-#{platform}-gpl-shared-7.0.tar.xz"
 
       version in ["7.1", "7.1.2"] ->
-        "download/autobuild-2025-09-23-13-17/ffmpeg-n7.1.2-2-gab05459692-#{platform}-gpl-shared-7.1.tar.xz"
+        "#{@ffmpeg_builds_url}/download/autobuild-2025-09-23-13-17/ffmpeg-n7.1.2-2-gab05459692-#{platform}-gpl-shared-7.1.tar.xz"
 
       version == "8.0" ->
-        "download/autobuild-2025-09-23-13-17/ffmpeg-n8.0-14-gb9adbf0fcc-#{platform}-gpl-shared-8.0.tar.xz"
+        "#{@ffmpeg_builds_url}/download/autobuild-2025-09-23-13-17/ffmpeg-n8.0-14-gb9adbf0fcc-#{platform}-gpl-shared-8.0.tar.xz"
 
       version == "latest" ->
-        "latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
+        "#{@ffmpeg_builds_url}/latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
 
       true ->
         Logger.warning("Version #{version} not found, using latest")
-        "latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
+        "#{@ffmpeg_builds_url}/latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"
     end
   end
 end
