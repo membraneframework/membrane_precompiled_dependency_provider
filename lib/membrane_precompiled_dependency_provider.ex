@@ -137,14 +137,11 @@ defmodule Membrane.PrecompiledDependencyProvider do
       version in ["6.1", "6.1.3"] ->
         "#{@ffmpeg_builds_url}/download/autobuild-2025-08-31-13-00/ffmpeg-n6.1.3-#{platform}-gpl-shared-6.1.tar.xz"
 
-      version in ["7.0", "7.0.2"] ->
-        "#{@ffmpeg_builds_url}/download/autobuild-2024-08-31-12-50/ffmpeg-n7.0.2-6-g7e69129d2f-#{platform}-gpl-shared-7.0.tar.xz"
-
       version in ["7.1", "7.1.2"] ->
-        "#{@ffmpeg_builds_url}/download/autobuild-2025-09-23-13-17/ffmpeg-n7.1.2-2-gab05459692-#{platform}-gpl-shared-7.1.tar.xz"
+        "#{@ffmpeg_builds_url}/download/autobuild-2025-09-30-13-19/ffmpeg-n7.1.2-5-g8f77695e65-#{platform}-gpl-shared-7.1.tar.xz"
 
       version == "8.0" ->
-        "#{@ffmpeg_builds_url}/download/autobuild-2025-09-23-13-17/ffmpeg-n8.0-14-gb9adbf0fcc-#{platform}-gpl-shared-8.0.tar.xz"
+        "#{@ffmpeg_builds_url}/download/autobuild-2025-09-30-13-19/ffmpeg-n8.0-16-gd8605a6b55-#{platform}-gpl-shared-8.0.tar.xz"
 
       version == "latest" ->
         "#{@ffmpeg_builds_url}/latest/download/ffmpeg-master-latest-#{platform}-gpl-shared.tar.xz"

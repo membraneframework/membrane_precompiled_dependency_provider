@@ -13,7 +13,7 @@ The package can be installed by adding `membrane_precompiled_dependency_provider
 ```elixir
 def deps do
   [
-    {:membrane_precompiled_dependency_provider, "~> 0.2.3"}
+    {:membrane_precompiled_dependency_provider, "~> 0.2.4"}
   ]
 end
 ```
