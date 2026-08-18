@@ -70,6 +70,7 @@ defmodule Membrane.PrecompiledDependencyProvider.MixProject do
   defp deps() do
     [
       {:bundlex, "~> 1.4"},
+      {:req, "~> 0.5"},
       {:ex_doc, ">= 0.40.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
