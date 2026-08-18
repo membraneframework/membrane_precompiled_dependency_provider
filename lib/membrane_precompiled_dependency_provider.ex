@@ -39,13 +39,17 @@ defmodule Membrane.PrecompiledDependencyProvider do
   Get URL of a precompiled build of given dependency for a platform from which this function is being
   called. 
 
-  A specific version of the dependency can be provided with `:version` option or through config 
+  A specific version of the dependency can be provided with `:version` option or through config
   (see `t:version_config/0`). If provided in both ways, the config value will be taken.
   For generic dependencies this version needs to be the same as a release name from the
   repository of the precompiled dependency, but without the leading "v". By default the latest
   version is chosen.
+
+  The target platform can be overridden with the `:target` option (a map in the format returned
+  by `Bundlex.get_target/0`). By default the platform from which this function is being called
+  is used.
   """
-  @spec get_dependency_url(precompiled_dependency(), version: String.t()) ::
+  @spec get_dependency_url(precompiled_dependency(), version: String.t(), target: map()) ::
           String.t() | nil
   def get_dependency_url(dependency, options \\ [])
 
@@ -55,7 +59,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
     generic_url_prefix =
       get_generic_dependency_url_prefix(:ffmpeg, version)
 
-    case Bundlex.get_target() do
+    case resolve_target(options) do
       %{abi: "musl"} ->
         nil
 
@@ -89,7 +93,7 @@ defmodule Membrane.PrecompiledDependencyProvider do
     generic_url_prefix =
       get_generic_dependency_url_prefix(generic_dependency, version)
 
-    case Bundlex.get_target() do
+    case resolve_target(options) do
       %{abi: "musl"} ->
         nil
 
@@ -108,6 +112,15 @@ defmodule Membrane.PrecompiledDependencyProvider do
       _other ->
         nil
     end
+  end
+
+  @doc false
+  @spec known_ffmpeg_versions() :: [String.t()]
+  def known_ffmpeg_versions(), do: ["6.0.1", "6.1.3", "7.1.2", "8.0", "latest"]
+
+  @spec resolve_target(version: String.t(), target: map()) :: map()
+  defp resolve_target(opts) do
+    Keyword.get_lazy(opts, :target, &Bundlex.get_target/0)
   end
 
   @spec resolve_version(precompiled_dependency(), version: String.t()) :: String.t()
