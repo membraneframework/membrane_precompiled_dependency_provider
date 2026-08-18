@@ -1,6 +1,3 @@
-# Verifies that all URLs emitted by Membrane.PrecompiledDependencyProvider point to
-# existing artifacts. Run with: mix run scripts/check_links.exs
-
 defmodule CheckLinks do
   @generic_dependencies [
     :dav1d,
@@ -24,22 +21,18 @@ defmodule CheckLinks do
     %{architecture: "aarch64", os: "darwin22.6.0", abi: "gnu"}
   ]
 
-  # Artifacts that were never published; remove entries once they are.
-  @known_broken [
-    {:ffmpeg, "6.1.3", "x86_64", "darwin"},
-    {:ffmpeg, "6.1.3", "aarch64", "darwin"},
-    {:ffmpeg, "7.1.2", "x86_64", "darwin"},
-    {:ffmpeg, "7.1.2", "aarch64", "darwin"},
-    {:ffmpeg, "8.0", "x86_64", "darwin"}
-  ]
-
-  # No generic dependency publishes a macos_intel artifact.
   defp known_broken?(dep, _version, %{architecture: "x86_64", os: "darwin" <> _rest})
        when dep != :ffmpeg,
        do: true
 
   defp known_broken?(dep, version, target) do
-    {dep, version, target.architecture, os_family(target)} in @known_broken
+    {dep, version, target.architecture, os_family(target)} in [
+      {:ffmpeg, "6.1.3", "x86_64", "darwin"},
+      {:ffmpeg, "6.1.3", "aarch64", "darwin"},
+      {:ffmpeg, "7.1.2", "x86_64", "darwin"},
+      {:ffmpeg, "7.1.2", "aarch64", "darwin"},
+      {:ffmpeg, "8.0", "x86_64", "darwin"}
+    ]
   end
 
   def run() do
@@ -76,8 +69,6 @@ defmodule CheckLinks do
       )
       |> Enum.map(fn {:ok, result} -> result end)
 
-    # Only a confirmed 404/410 fails the job - transient errors (timeouts, 5xx etc.)
-    # would create false-positive issues on CI.
     broken = for {url, :broken} <- results, do: url
     transient = for {url, {:transient, reason}} <- results, do: {url, reason}
 
@@ -93,7 +84,6 @@ defmodule CheckLinks do
     end
   end
 
-  # Req retries transient errors (timeouts, 5xx etc.) on its own before we classify.
   defp check(url) do
     case Req.head(url, receive_timeout: 30_000, redirect_log_level: false) do
       {:ok, %Req.Response{status: status}} when status in 200..399 -> :ok
