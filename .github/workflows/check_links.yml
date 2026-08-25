@@ -21,10 +21,11 @@ jobs:
 
       - run: mix deps.get
 
-      - run: mix run scripts/check_links.exs
+      - id: check_links
+        run: mix run scripts/check_links.exs
 
       - name: Open issue on failure
-        if: failure()
+        if: failure() && steps.check_links.outcome == 'failure'
         uses: actions/github-script@v7
         with:
           script: |
